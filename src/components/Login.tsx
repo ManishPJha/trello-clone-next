@@ -37,11 +37,11 @@ const Login: NextPage = () => {
   const apiRequest = async (formdata: FieldValue<formPropTypes>) => {
     const response = await API.post(url.concat("/api/login"), formdata);
 
-    if(response.data.success){
-      console.log('ALERT SUCCESS HERE----');
-      
+    if (response.data.success) {
+      window.location.href = window.location.origin + "/";
+    } else {
+      // setError()
     }
-
   };
 
   return (
