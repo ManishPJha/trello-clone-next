@@ -14,18 +14,15 @@ export default async function isAuthenticated(ctx: any) {
         return {
           id: isValidToken.id,
           isValidated: true,
-          isAuthenticated: true,
         };
       } else {
         return {
           isValidated: false,
-          isAuthenticated: false,
         };
       }
     } else {
       return {
         isValidated: false,
-        isAuthenticated: false,
       };
     }
   } catch (error: any) {

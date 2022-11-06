@@ -1,37 +1,24 @@
-import { AppProps } from "next/app";
+import App, { AppProps, AppContext } from "next/app";
 import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 import NProgress from "nextjs-progressbar";
-import { PersistGate } from "redux-persist/integration/react";
 import { Provider } from "react-redux";
+import { PersistGate } from "redux-persist/integration/react";
 import { store, persistor, Wrapper } from "@/src/store";
 
 import AppTheme from "@/src/Layouts/themes/AppTheme.json";
 
 import "nprogress/nprogress.css";
 
-const App = ({ Component, pageProps }: AppProps) => {
+type withAppPorps =  Pick<AppProps, "Component" | "pageProps"> & {
+  // example: string;
+};
 
-  // if(typeof window === "undefined") {
+const MainApp = ({ Component, pageProps }: withAppPorps) => {
 
-  //   // const { store, props } = Wrapper.useWrappedStore(pageProps);
-  //   const _store = configureStorewithSSR(store);
-    
-  //   return (
-  //     <ChakraProvider theme={extendTheme(AppTheme)}>
-  //       <NProgress
-  //         color="#0079bf"
-  //         startPosition={0.3}
-  //         stopDelayMs={200}
-  //         height={4}
-  //       />
-  //       <Provider store={_store} >
-  //         {/* <PersistGate persistor={persistor}> */}
-  //           <Component {...pageProps} />
-  //         {/* </PersistGate> */}
-  //       </Provider>
-  //     </ChakraProvider>
-  //   );
-  // }
+  const { props, store } = Wrapper.useWrappedStore(pageProps);
+ 
+  
+  // console.log(`catched states are ------->`,store.getState());
 
   return (
     <ChakraProvider theme={extendTheme(AppTheme)}>
@@ -41,13 +28,13 @@ const App = ({ Component, pageProps }: AppProps) => {
         stopDelayMs={200}
         height={4}
       />
-      <Provider store={store} >
+      <Provider store={store}>
         <PersistGate persistor={persistor}>
-          <Component {...pageProps} />
+          <Component {...props} />
         </PersistGate>
       </Provider>
     </ChakraProvider>
   );
 };
 
-export default Wrapper.withRedux(App);
+export default Wrapper.withRedux(MainApp);

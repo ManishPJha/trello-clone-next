@@ -1,4 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { HYDRATE } from "next-redux-wrapper";
+
 type userProps = {
   firstName: string;
   lastName: string;
@@ -32,7 +34,15 @@ const usersSlice = createSlice({
     },
     resetStates: () => initState,
   },
-  extraReducers: {},
+  extraReducers: {
+    [HYDRATE]: (state, action) => {
+      if (!action.payload.value) {
+        return state;
+      }
+
+      state.users = action.payload.value;
+    },
+  },
 });
 
 export const { clearErrors, resetStates } = usersSlice.actions;

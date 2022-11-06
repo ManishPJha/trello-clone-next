@@ -2,7 +2,13 @@ import React from "react";
 
 import Home from "@/src/components/Home";
 import { withAuth } from "@/src/hoc/withAuth";
+import { Wrapper } from "@/src/store"
+import { NextPage } from "next";
 
-const homeWithAuth = withAuth(Home);
+const HomeWithAuth: NextPage = withAuth(Home);
 
-export default homeWithAuth;
+// HomeWithAuth.getInitialProps = Wrapper.getInitialPageProps(({ dispatch }) => async () => {
+//     // await dispatch()
+// })
+
+export default HomeWithAuth;
