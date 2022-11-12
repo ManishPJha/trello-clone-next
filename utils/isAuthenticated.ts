@@ -13,19 +13,17 @@ export default async function isAuthenticated(ctx: any) {
       if (isValidToken.email) {
         return {
           id: isValidToken.id,
+          email: isValidToken.email,
           isValidated: true,
-          isAuthenticated: true,
         };
       } else {
         return {
           isValidated: false,
-          isAuthenticated: false,
         };
       }
     } else {
       return {
         isValidated: false,
-        isAuthenticated: false,
       };
     }
   } catch (error: any) {

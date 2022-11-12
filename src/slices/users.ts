@@ -1,51 +1,50 @@
-import { checkEnvironment } from "@/utils/checkEnvironment";
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 import { HYDRATE } from "next-redux-wrapper";
 
-const initState = {
-  loading: false,
-  success: false,
-  error: undefined,
-  users: [],
+type userProps = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  resetToken?: string;
+  resetTokenExpiryTime?: any;
+  createdAt?: Date;
+  updatedAt?: Date;
 };
 
+type userStateTypes = {
+  loading: boolean;
+  error: any;
+  users: any;
+};
 
-let url = checkEnvironment();
-
-const fetchUsers = createAsyncThunk("user/get", async () => {
-  const response = await fetch(url.concat("/api/hello"));
-  const json = await response.json();
-
-  return json;
-});
+const initState: userStateTypes = {
+  loading: false,
+  error: null,
+  users: [],
+};
 
 const usersSlice = createSlice({
   name: "users",
   initialState: initState,
   reducers: {
-    // UpdateUserStates: (state, { payload, type }) => {
-    //   state.user = payload.value;
-    // },
-    resetState: () => initState,
+    clearErrors: (state) => {
+      state.loading = false;
+      state.error = null;
+    },
+    resetStates: () => initState,
   },
   extraReducers: {
     [HYDRATE]: (state, action) => {
-      return { ...state, ...action.value };
-    },
-    [fetchUsers.pending.toString()]: (state) => {
-      state.loading = true;
-      state.success = false;
-    },
-    [fetchUsers.fulfilled.toString()]: (state, action) => {
-      state.users = action.value;
-      state.success = true;
-    },
-    [fetchUsers.rejected.toString()]: (state) => {
-      state.loading = false;
-      state.success = false;
+      if (!action.payload.value) {
+        return state;
+      }
+
+      state.users = action.payload.value;
     },
   },
 });
 
-export const { resetState } = usersSlice.actions;
+export const { clearErrors, resetStates } = usersSlice.actions;
+
 export default usersSlice;

@@ -1,23 +1,7 @@
+import Welcome from "@/src/components/Welcome";
+import { withAuth } from "@/src/hoc/withAuth";
 import type { NextPage } from "next";
-import checkEnvironments from "../utils/checkEnvironments";
 
-const Home: NextPage = (props) => {
-  // console.log("1", props);
+const HomePageWithAuth: NextPage = withAuth(Welcome);
 
-  return (
-    <>
-      <p>fsf</p>
-    </>
-  );
-};
-
-export default Home;
-
-// Home.getInitialProps = async () => {
-//   const apiData = await (
-//     await fetch(checkEnvironments().concat("/api/hello"))
-//   ).json();
-//   return {
-//     data: apiData,
-//   };
-// };
+export default HomePageWithAuth;

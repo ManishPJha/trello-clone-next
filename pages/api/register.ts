@@ -6,8 +6,7 @@ import { connectToDatabase } from "@/utils/db";
 
 const handler = async (
   req: NextApiRequest,
-  res: NextApiResponse,
-  next: Function
+  res: NextApiResponse
 ): Promise<void> => {
   try {
     if (req.method === "POST") {

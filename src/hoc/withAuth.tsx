@@ -1,6 +1,7 @@
 import { Component } from "react";
 import isAuthenticated from "@/utils/isAuthenticated";
-import { UpdateUserStates } from "@/src/slices/user";
+import { AUTH_REQUEST, AUTH_RESPONSE, AUTH_FAIL } from "@/src/slices/auth";
+import { Wrapper } from "@/src/store";
 
 export const withAuth = (App: any) => {
   return class wrapAuthComponent extends Component {
@@ -8,36 +9,60 @@ export const withAuth = (App: any) => {
       super(props);
     }
 
-    static async getInitialProps(ctx: any) {
-      const authenticatedUser = await isAuthenticated(ctx);
+    // static async getInitialProps(ctx: any) {
+    //   // const { dispatch, getState } = ctx.store;
+    //   // dispatch(AUTH_REQUEST);
+    //   const authenticatedUser = await isAuthenticated(ctx);
 
-      // const { dispatch, getState } = setOrGetStore();
-      const { dispatch, getState } = ctx.store;
+    //   // console.log(`states ---->`, ctx);
 
-      if (authenticatedUser?.isAuthenticated === false) {
-        ctx.res.writeHead(307, {
-          Location: "/login",
-        });
-        ctx.res.end();
-        return;
-      }
+    //   if (
+    //     authenticatedUser &&
+    //     authenticatedUser.isValidated === false &&
+    //     ctx.req
+    //   ) {
+    //     ctx.res.writeHead(307, {
+    //       Location: "/login",
+    //     });
+    //     ctx.res.end();
+    //     return;
+    //   }
 
-      dispatch(UpdateUserStates(authenticatedUser));
+    //   return {
+    //     data: {
+    //       ...authenticatedUser,
+    //     },
+    //   };
+    // }
 
-      console.log(`---------------props-start------------`);
-      console.log(getState());
-      console.log(`---------------props-end------------`);
-
-      // return {
-      //   reduxState: ctx.store.getState(),
-      // };
-
-      return {
-        auth: {
-          ...authenticatedUser,
-        },
-      };
-    }
+    static getInitialProps = Wrapper.getInitialPageProps(
+      ({ dispatch, getState }) =>
+        async (ctx) => {
+          dispatch(AUTH_REQUEST({ loading: true }));
+          const authenticatedUser = await isAuthenticated(ctx);
+          if (
+            authenticatedUser &&
+            authenticatedUser.isValidated === false &&
+            ctx.req
+          ) {
+            dispatch(AUTH_FAIL({ loading: false, error: "Login Failed!" }));
+            ctx?.res?.writeHead(307, {
+              Location: "/login",
+            });
+            ctx?.res?.end();
+            return;
+          } else if (
+            authenticatedUser &&
+            authenticatedUser.isValidated === true
+          ) {
+            const { id, email } = authenticatedUser;
+            dispatch(AUTH_RESPONSE({ authData: { id, email } }));
+          }
+          return {
+            authState: { ...getState().auth },
+          };
+        }
+    );
 
     render() {
       return <App {...this.props} />;
