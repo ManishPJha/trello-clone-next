@@ -4,7 +4,7 @@ import Link from "next/link";
 import React from "react";
 
 const Home: NextPage<any> = (props, ...rest) => {
-  console.log(`home props----- `,rest);
+  console.log(`home props----- `,props);
   
   return (
     <div>

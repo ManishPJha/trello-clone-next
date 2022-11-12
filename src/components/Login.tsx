@@ -24,7 +24,20 @@ interface formPropTypes {
   password: string;
 }
 
-const Login: NextPage = () => {
+const fetchAuthUser = async (formdata: any) => {
+  let url = checkEnvironment();
+
+  const auth = await API.post(url.concat("/api/login"), formdata, {
+    headers: {
+      "cache": "no-store",
+    }
+  });
+
+  return auth;
+
+}
+
+const Login = () => {
   const {
     register,
     handleSubmit,
@@ -32,15 +45,14 @@ const Login: NextPage = () => {
     formState: { errors },
   } = useForm();
 
-  let url = checkEnvironment();
-
   const apiRequest = async (formdata: FieldValue<formPropTypes>) => {
-    const response = await API.post(url.concat("/api/login"), formdata);
+
+    const response = await fetchAuthUser(formdata);
 
     if (response.data.success) {
       window.location.href = window.location.origin + "/";
     } else {
-      // setError()
+      console.log(`For error>>>`,response.data);
     }
   };
 

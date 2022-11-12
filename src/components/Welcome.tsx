@@ -1,6 +1,14 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useSelector } from "react-redux";
+import { authSelector } from "@/src/slices/auth";
 
-const Welcome = () => {
+const Welcome = (props: any) => {
+  const authState = useSelector(authSelector);
+
+  useEffect(() => {
+    console.log(`int ----`, props);
+  }, [props]);
+
   return (
     <div>
       Welcome Lorem ipsum dolor sit amet consectetur adipisicing elit.
