@@ -13,6 +13,11 @@ export type ColumnSliceType = {
   columns: Array<any>;
 };
 
+type sequenceType = {
+  oldIndex: number;
+  newIndex: number;
+};
+
 const initState = {
   loading: false,
   error: null,
@@ -29,6 +34,16 @@ export const fetchColumns = createAsyncThunk(
   "column/getAll",
   async (obj, { getState }) => {
     const columns = await API.get(baseURL.concat("/api/column"));
+    return columns.data.data;
+  }
+);
+
+export const fetchColumnsByBoardId = createAsyncThunk(
+  "column/getAllByBoard",
+  async (obj: { id: string }, { getState }) => {
+    const columns = await API.get(
+      baseURL.concat("/api/column/board/" + obj.id)
+    );
     return columns.data.data;
   }
 );
@@ -71,11 +86,22 @@ export const addColumn = createAsyncThunk(
 
 export const updateColumn = createAsyncThunk(
   "column/put",
-  async (obj: { id: string; name?: string; sequence?: string }) => {
+  async (obj: {
+    id: string;
+    destinationId?: string;
+    name?: string;
+    sequence?: sequenceType;
+  }) => {
     const formBody = {
       name: obj.name,
+      destinationId: obj.destinationId,
       sequence: obj.sequence,
     };
+    // const updateColumnReq = await API.put(
+    //   baseURL.concat("/api/column/" + obj.id),
+    //   formBody
+    // );
+
     const updateColumnReq = await API.put(
       baseURL.concat("/api/column/" + obj.id),
       formBody
@@ -143,15 +169,34 @@ const columnSlice = createSlice({
       state.loading = false;
       state.error = action.error.message;
     },
+    [fetchColumnsByBoardId.pending.toString()]: (state, action) => {
+      state.loading = true;
+    },
+    [fetchColumnsByBoardId.fulfilled.toString()]: (state, action) => {
+
+      let result: any = action.payload;
+
+      result.sort((prev: any, next: any) =>
+        prev.sequence > next.sequence ? 1 : -1
+      );
+
+      console.log(`payload is----`, action.payload);
+
+      console.log(`after`, result);
+
+      state.loading = false;
+      state.columns = result;
+    },
+    [fetchColumnsByBoardId.rejected.toString()]: (state, action) => {
+      state.loading = false;
+      state.error = action.error.message;
+    },
   },
 });
 
 export const columnSelector = (state: AppState) => state.columns.column;
 export const columnsSelector = (state: AppState) => state.columns.columns;
 
-export const {
-  clearErrors,
-  resetStates,
-} = columnSlice.actions;
+export const { clearErrors, resetStates } = columnSlice.actions;
 
 export default columnSlice;
