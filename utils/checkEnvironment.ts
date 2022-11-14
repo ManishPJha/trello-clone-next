@@ -1,7 +1,7 @@
 export const checkEnvironment = () => {
   let BASE_URI =
     process.env.NODE_ENV === "development"
-      ? "http://localhost:3000"
-      : "https://trello-clone-app.onrender.com";
+      ? process.env.BASE_URL!
+      : process.env.LIVE_URL!;
   return BASE_URI;
 };

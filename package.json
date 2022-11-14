@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "rimraf ./.next && next dev",
-    "build": "rimraf ./.next && next build && npm run start",
+    "dev": "rimraf ./.next && next",
+    "build": "rimraf ./.next && next build",
     "start": "next start",
     "lint": "next lint"
   },
