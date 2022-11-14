@@ -7,9 +7,9 @@ import AddColumn from "@/src/components/board/columns/add";
 import {
   addColumn as addColumnAction,
   updateColumn,
-  fetchColumns,
   columnSelector,
   columnsSelector,
+  fetchColumnsByBoardId,
 } from "@/src/slices/column";
 import Column from "@/src/components/board/column";
 
@@ -36,7 +36,7 @@ const Columns = ({ onDragEndHandler, board, auth }: ColumnProps) => {
     const column = await dispatch<any>(addColumnAction({ id: id }));
 
     if (column) {
-      await dispatch<any>(fetchColumns());
+      await dispatch<any>(fetchColumnsByBoardId({ id: board.boardId }));
       setIsSuccess(false);
     }
   };
