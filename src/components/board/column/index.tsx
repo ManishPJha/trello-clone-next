@@ -15,27 +15,19 @@ import {
 } from "@chakra-ui/react";
 import { DragHandleIcon, DeleteIcon } from "@chakra-ui/icons";
 import { AiOutlineMore } from "react-icons/ai";
+import { Draggable, Droppable } from "react-beautiful-dnd";
+import { useDispatch } from "react-redux";
+import shortid from "shortid";
+
+import AddCard from "@/src/components/board/column/card/AddCard";
+import CardList from "@/src/components/board/column/card/CardList";
+
+import { _ColumnProps, HandlerProps } from "@/src/types/IBoardTypes";
+
 import {
-  Draggable,
-  DraggableProvidedDragHandleProps,
-} from "react-beautiful-dnd";
-
-interface ColumnProps {
-  column: any;
-  ind: any;
-  setName: any;
-  setColumnId: any;
-  name: string;
-}
-
-interface HandlerProps {
-  draggableProps: DraggableProvidedDragHandleProps;
-  columnId: string;
-  columnName: string;
-  setName: any;
-  setColumnId: any;
-  name: string;
-}
+  addCard as addCardRequest,
+  fetchCardsWithBoardId,
+} from "@/src/slices/cards";
 
 const LoadTitleWithDragHandler: FC<HandlerProps> = ({
   draggableProps,
@@ -102,10 +94,56 @@ const LoadTitleWithDragHandler: FC<HandlerProps> = ({
   );
 };
 
-const Column = ({ column, ind, setName, setColumnId, name }: ColumnProps) => {
+const Column = ({
+  column,
+  cards,
+  ind,
+  setName,
+  setColumnId,
+  name,
+}: _ColumnProps) => {
+  const [cardName, setCardName] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const { boardId, filteredWithBoardId } = column;
+  const { _id } = filteredWithBoardId;
+
+  const dispatch = useDispatch();
+
+  const filteredCards =
+    cards && cards.filter((card) => card.innerColumnData._id === column._id);
+
+  const addCard = async (event: React.MouseEvent<HTMLElement>) => {
+    event.preventDefault();
+    setIsLoading(true);
+    try {
+      let cardId = shortid.generate();
+
+      if (cardId) {
+        const isCardAdded = await dispatch<any>(
+          addCardRequest({
+            id: cardId,
+            columnId: column._id,
+            boardId: _id,
+            name: cardName || "Edit Name"
+          })
+        );
+
+        if (isCardAdded) {
+          // do success stuff
+          setIsLoading(false);
+          dispatch<any>(fetchCardsWithBoardId({ id: String(boardId) }));
+        }
+      }
+    } catch (error: any) {
+      console.log(error.message);
+      setIsLoading(false);
+    }
+  };
+
   return (
     <HStack direction={"column"}>
-      <Draggable draggableId={column._id} index={ind}>
+      <Draggable draggableId={String(column._id)} index={ind}>
         {(provided) => (
           <Box
             width="272px"
@@ -117,9 +155,8 @@ const Column = ({ column, ind, setName, setColumnId, name }: ColumnProps) => {
             {...provided.draggableProps}
           >
             <HStack
-              gap={4}
+              gap={12}
               bg={column.name === "Add Column" ? "#F0F0F0" : "#F0F0F0"}
-              // pb={5}
             >
               {LoadTitleWithDragHandler({
                 draggableProps: provided.dragHandleProps!,
@@ -142,9 +179,6 @@ const Column = ({ column, ind, setName, setColumnId, name }: ColumnProps) => {
                   rightIcon={<AiOutlineMore />}
                 ></MenuButton>
                 <MenuList>
-                  {/* <MenuItem>
-                    <Text>Edit</Text>
-                  </MenuItem> */}
                   <MenuItem>
                     <DeleteIcon />
                     <Text ml={2}>Delete</Text>
@@ -152,6 +186,28 @@ const Column = ({ column, ind, setName, setColumnId, name }: ColumnProps) => {
                 </MenuList>
               </Menu>
             </HStack>
+
+            {/* Card Component Begin */}
+            <Droppable droppableId={String(column._id)} type="cards">
+              {(provided) => (
+                <Fragment>
+                  <CardList
+                    cards={filteredCards}
+                    dropRef={provided.innerRef}
+                    {...provided.droppableProps}
+                  />
+                  {provided.placeholder}
+                </Fragment>
+              )}
+            </Droppable>
+
+            <AddCard
+              setName={setCardName}
+              name={cardName}
+              addCard={addCard}
+              column={column}
+            />
+            {/* Card Component End */}
           </Box>
         )}
       </Draggable>

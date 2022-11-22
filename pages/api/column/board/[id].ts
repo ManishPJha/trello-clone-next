@@ -10,9 +10,36 @@ const handler = async (
   if (req.method === "GET") {
     const { id } = req.query;
 
+    // const columns = await db
+    //   .collection("column")
+    //   .find({ boardId: id })
+    //   .toArray();
+
     const columns = await db
       .collection("column")
-      .find({ boardId: id })
+      .aggregate([
+        {
+          $lookup: {
+            from: "board",
+            localField: "boardId",
+            foreignField: "boardId",
+            as: "filteredWithBoardId",
+          },
+        },
+        {
+          $unwind: "$filteredWithBoardId",
+        },
+        {
+          $match: {
+            boardId: id,
+          },
+        },
+        {
+          $sort: {
+            sequence: 1,
+          },
+        },
+      ])
       .toArray();
 
     return new Promise((resolve, reject) => {

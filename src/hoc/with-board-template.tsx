@@ -4,6 +4,7 @@ import { resetServerContext } from "react-beautiful-dnd";
 import { Wrapper } from "@/src/store";
 import { fetchBoardWithSlugId } from "@/src/slices/board";
 import { fetchColumns, fetchColumnsByBoardId } from "@/src/slices/column";
+import { fetchCardsWithBoardId } from "@/src/slices/cards";
 
 const withBoardTemplate = (App: NextPage) => {
   return class WrapBoardSlugApp extends Component {
@@ -21,12 +22,10 @@ const withBoardTemplate = (App: NextPage) => {
 
           // [NOTE]: always call redux fetch actions before initializing the props to bind automatically with page props
           await dispatch<any>(fetchBoardWithSlugId({ id: ctx.query.slug }));
-
-          // await dispatch<any>(fetchColumns());
           await dispatch<any>(fetchColumnsByBoardId({ id: ctx.query.slug }));
+          await dispatch<any>(fetchCardsWithBoardId({ id: ctx.query.slug }));
 
           if (App.getInitialProps) {
-            pageProps = await App.getInitialProps(ctx);
           }
 
           return {

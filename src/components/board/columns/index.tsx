@@ -3,7 +3,7 @@ import React, { Fragment, useEffect, useState } from "react";
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
 import { useDispatch, useSelector } from "react-redux";
 import shortId from "shortid";
-import AddColumn from "@/src/components/board/columns/add";
+
 import {
   addColumn as addColumnAction,
   updateColumn,
@@ -11,13 +11,12 @@ import {
   columnsSelector,
   fetchColumnsByBoardId,
 } from "@/src/slices/column";
+import { cardsSelector } from "@/src/slices/cards";
+
+import AddColumn from "@/src/components/board/columns/add";
 import Column from "@/src/components/board/column";
 
-type ColumnProps = {
-  auth: any;
-  board: any;
-  onDragEndHandler: (props: any) => void;
-};
+import { ColumnProps } from "@/src/types/IBoardTypes";
 
 const Columns = ({ onDragEndHandler, board, auth }: ColumnProps) => {
   const [isSuccess, setIsSuccess] = useState(false);
@@ -25,8 +24,9 @@ const Columns = ({ onDragEndHandler, board, auth }: ColumnProps) => {
   const [name, setName] = useState("");
   const [columnId, setColumnId] = useState("");
 
-  const column = useSelector(columnSelector);
+  // const column = useSelector(columnSelector);
   const columns = useSelector(columnsSelector);
+  const cards = useSelector(cardsSelector).cards;
 
   const dispatch = useDispatch();
 
@@ -92,12 +92,13 @@ const Columns = ({ onDragEndHandler, board, auth }: ColumnProps) => {
                   position="absolute"
                   overflowY="auto"
                 >
-                  {/* Columns List To Do */}
+                  {/* Columns List*/}
                   {columnsList &&
                     columnsList.map((column, index) => (
                       <Column
                         key={index}
                         column={column}
+                        cards={cards}
                         ind={index}
                         setName={(title: string) => setName(title)}
                         setColumnId={(id: string) => setColumnId(id)}
@@ -105,6 +106,8 @@ const Columns = ({ onDragEndHandler, board, auth }: ColumnProps) => {
                       />
                     ))}
                   {provider.placeholder}
+
+                  {/* Add Column Component */}
                   <AddColumn addColumn={addColumn} columnRequest={isSuccess} />
                 </Box>
               </Fragment>
