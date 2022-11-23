@@ -49,12 +49,12 @@ const handler = async (
       return new Promise((resolve, reject) => {
         try {
           if (board) {
-            res.status(201).json({
+            res.status(200).json({
               success: true,
               message: `record fetched successfully.`,
               data: board,
             });
-            resolve();
+            resolve(board);
             return;
           }
           res.status(200).json({

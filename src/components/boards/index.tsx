@@ -4,9 +4,10 @@ import { Button, useDisclosure, Box, Text, HStack } from "@chakra-ui/react";
 import { AddIcon } from "@chakra-ui/icons";
 import { useDispatch, useSelector } from "react-redux";
 import shortid from "shortid";
+import { NextRouter } from "next/router";
+
 import AddBoard from "@/src/components/boards/AddBoard";
 import { createBoard, fetchBoards, boardsSelector } from "@/src/slices/board";
-import { NextRouter } from "next/router";
 
 interface boardsTypes {
   boards: Array<any>;

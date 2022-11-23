@@ -14,6 +14,7 @@ import usersSlice from "@/src/slices/users";
 import authSlice from "@/src/slices/auth";
 import boardSlice from "@/src/slices/board";
 import columnSlice from "@/src/slices/column";
+import cardsSlice from "@/src/slices/cards";
 
 // // persist storage is not usable in next js (issue: https://github.com/rt2zz/redux-persist/issues/1208)
 // import storage from "reduxjs-toolkit-persist/lib/storage/session";
@@ -35,6 +36,7 @@ const createStore = () =>
       [usersSlice.name]: usersSlice.reducer,
       [boardSlice.name]: boardSlice.reducer,
       [columnSlice.name]: columnSlice.reducer,
+      [cardsSlice.name]: cardsSlice.reducer,
     },
     devTools: {
       trace: true,

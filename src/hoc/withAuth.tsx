@@ -9,32 +9,6 @@ export const withAuth = (App: any) => {
       super(props);
     }
 
-    // static async getInitialProps(ctx: any) {
-    //   // const { dispatch, getState } = ctx.store;
-    //   // dispatch(AUTH_REQUEST);
-    //   const authenticatedUser = await isAuthenticated(ctx);
-
-    //   // console.log(`states ---->`, ctx);
-
-    //   if (
-    //     authenticatedUser &&
-    //     authenticatedUser.isValidated === false &&
-    //     ctx.req
-    //   ) {
-    //     ctx.res.writeHead(307, {
-    //       Location: "/login",
-    //     });
-    //     ctx.res.end();
-    //     return;
-    //   }
-
-    //   return {
-    //     data: {
-    //       ...authenticatedUser,
-    //     },
-    //   };
-    // }
-
     static getInitialProps = Wrapper.getInitialPageProps(
       ({ dispatch, getState }) =>
         async (ctx) => {

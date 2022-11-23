@@ -1,5 +1,5 @@
 import { NextPage } from "next";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { FieldValue, useForm } from "react-hook-form";
 
 import { API } from "@/utils/API";
@@ -29,13 +29,12 @@ const fetchAuthUser = async (formdata: any) => {
 
   const auth = await API.post(url.concat("/api/login"), formdata, {
     headers: {
-      "cache": "no-store",
-    }
+      cache: "no-store",
+    },
   });
 
   return auth;
-
-}
+};
 
 const Login = () => {
   const {
@@ -45,14 +44,15 @@ const Login = () => {
     formState: { errors },
   } = useForm();
 
-  const apiRequest = async (formdata: FieldValue<formPropTypes>) => {
+  const [loading, setLoading] = useState(false);
 
+  const apiRequest = async (formdata: FieldValue<formPropTypes>) => {
     const response = await fetchAuthUser(formdata);
 
     if (response.data.success) {
       window.location.href = window.location.origin + "/";
     } else {
-      console.log(`For error>>>`,response.data);
+      console.log(`For error>>>`, response.data);
     }
   };
 
@@ -64,10 +64,13 @@ const Login = () => {
           <form
             onSubmit={handleSubmit(
               async (data, event) => {
+                setLoading(true);
                 event?.preventDefault();
                 await apiRequest(data);
+                setLoading(false);
               },
               (error) => {
+                setLoading(false);
                 console.log(`Form Error ======>`, error);
               }
             )}
@@ -115,7 +118,13 @@ const Login = () => {
                 <Checkbox>Remember me</Checkbox>
                 <Link color={"blue.500"}>Forgot password?</Link>
               </Stack>
-              <Button colorScheme={"blue"} variant={"solid"} type="submit">
+              <Button
+                colorScheme={"blue"}
+                variant={"solid"}
+                type="submit"
+                isLoading={loading}
+                isDisabled={loading}
+              >
                 Sign in
               </Button>
             </Stack>

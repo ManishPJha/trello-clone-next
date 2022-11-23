@@ -41,10 +41,10 @@ export const fetchColumns = createAsyncThunk(
 export const fetchColumnsByBoardId = createAsyncThunk(
   "column/getAllByBoard",
   async (obj: { id: string }, { getState }) => {
-    const columns = await API.get(
+    const response = await API.get(
       baseURL.concat("/api/column/board/" + obj.id)
     );
-    return columns.data.data;
+    return response.data.data;
   }
 );
 
@@ -173,19 +173,13 @@ const columnSlice = createSlice({
       state.loading = true;
     },
     [fetchColumnsByBoardId.fulfilled.toString()]: (state, action) => {
+      // let result: any = action.payload;
 
-      let result: any = action.payload;
-
-      result.sort((prev: any, next: any) =>
-        prev.sequence > next.sequence ? 1 : -1
-      );
-
-      console.log(`payload is----`, action.payload);
-
-      console.log(`after`, result);
-
+      // result.sort((prev: any, next: any) =>
+      //   prev.sequence > next.sequence ? 1 : -1
+      // );
       state.loading = false;
-      state.columns = result;
+      state.columns = action.payload;
     },
     [fetchColumnsByBoardId.rejected.toString()]: (state, action) => {
       state.loading = false;
